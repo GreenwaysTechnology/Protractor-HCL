@@ -1,0 +1,135 @@
+Node.js
+-------
+-->It is javascript runtime, used to run java script applications outside web browser
+->it is written on google v8, which is called javascript runtime.
+
+what is objective of node.js?
+
+1.To network nonblocking and async  web applications.
+    ->To scale hori - min resources, high performance.
+
+Node use cases:
+
+1. Build javascript applications for web,network based application.
+2. Used to run as a platform for building other application- UI,Mobile Applications...
+3. Used as Testing engine - /Testing platform - How to test javascript javascript application.
+
+Javascript Application:
+
+js was created for manipulating web pages  - :  DOM programming.
+
+After node:
+
+javascript has been used to build
+
+1.server side applications : restfull webservices,dynamic content generation application
+2.User interface applications-SPA - back bone,Angular js(1),Angular-2,4,5,6,7,8,9(Typescript)
+                                    React.js, Vue.js......
+3.Mobile Apps - Angular -ionic,React Native......
+4.Device apps -
+5.Machine learning,AI
+
+What ever type of app, we need to test. in order test applications we need testing frameworks
+
+Software env:
+
+1.dev
+2.testing
+3.Prod
+
+in order to set any env, we need platform - Node.js
+
+Node and testing env:
+....................
+
+
+                            Testing Apps
+                                |	
+
+	Mocha,jasmine      --------Testing Engine-Javascript program-Frameworks
+				 |
+			       Node.js - platform
+				 |
+				 OS
+********************************************************************************************
+
+basic knowledge on javascript.
+node  applications -  node modules
+javascript package manager - npm.
+
+functions- args,parameters,return values
+async programming - callbacks,promise,async,await
+
+*******************************************************************************************
+How enter prise javascript application ; modualrity.
+
+ breaking application into smaller and smaller , how to combine and them run them.
+
+js has no any modular patterns.
+
+js community brought modular design patterns.
+
+1.namespace -old
+2.amd-
+3.cjs - which is used in node applications even today
+4.e6 modules- ecma pattern
+5.system
+6.umd
+
+cjs:
+ - how to write code and how link code and how distribute them.
+
+Linking
+ cjs provides simple function  name called "require"
+
+sharing
+ exports : packs any code inside an object and that object will be returned.
+
+ module.exports :
+  it does not add code inside object , rather it returns as it is-  
+  lets say if you return function, it returns function.
+
+
+Types of modules:
+
+1.custom modules : you have created.
+2.node in built modules : provided by node, for building network , io applications.
+3.third party modules ; provided by community.
+    eg : jasmin,protractor,chai,should,blanket..........angular,react,vue,express....
+-->npm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Type script
+
+
+Protractor
