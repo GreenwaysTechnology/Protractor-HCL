@@ -99,6 +99,639 @@ Types of modules:
 -->npm
 
 
+Third party modules:
+
+ The module is built and distributed by person/company/community to others.
+
+you need a centeralized location  , repository server - https://www.npmjs.com/
+
+npmjs.com is one the biggest software repository ever.
+
+if you want to use any third party module, you need to download loacally from this repository.
+if you want to publish modules.
+
+
+in order to deal with third party modules, you need tool called "npm / npmx".
+
+npm tool is distributed along with node distribution.
+
+ ->npm --version
+
+npm -node package manager 
+ tool.
+
+where we can download node-moudles from npmjs.com?
+
+->node_modules
+    -it is folder where all third party javascript files- libs,frameworks.
+
+where you can find out this folder?
+
+ -> inside project
+ -> inside c/ drive - gobal modlues
+
+how to create this folder?
+
+ folder is first created when you download any modules.
+
+
+project meta file: package.json
+   configuration file.
+
+This is file , for keeping javascript apps(any type)
+
+Every node project must have package.json file.
+
+how to create it?
+  npm command
+
+npm init
+
+{
+  "name": "mynode-apps",
+  "version": "1.0.0",
+  "description": "This is pre learning for Protractor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Subramanian Murugan",
+  "license": "ISC"
+}
+*******************************************************************************************
+
+Node Modules category:
+
+->For development and Production 
+->For development only - testing dependencies.
+->For development/Testing/Production tooling - tools for automation, testing.....
+
+if any category, you can download and install.
+
+  npm install modulename --category(options)
+  npm install modulename  
+ options
+   --save  :  dev+production
+   --save-dev :  only for dev/test/tool
+   --global /g  :  only for tooling
+
+->For development and Production:
+ npm install modulename  --save
+ 
+package.json
+"dependencies": {
+    "lodash": "^4.17.19"
+  }
+
+//use third party dependencies
+
+var _ =require('lodash');
+
+var users = [
+    { 'user': 'barney', 'age': 36, 'active': false },
+    { 'user': 'fred',   'age': 40, 'active': true }
+  ];
+
+var result =_.filter(users, function(o) { return !o.active; });
+
+console.log(result);
+
+how to unistall modules:
+.........................
+>npm uninstall jquery --save
+********************************************************************************************
+
+dev depedencies:
+
+ npm install modulename --save-dev
+
+eg:
+ Unit testing assertion lib.
+
+chai
+npm install chai --save-dev
+
+ "devDependencies": {
+    "chai": "^4.2.0"
+  }
+********************************************************************************************
+ require('module') vs require('./module')
+
+ if require('module') , node internally uses a search algorthim, which searches node modules
+ 
+  --->project node_modules
+		  |
+                 if found , it will load from there
+                   |
+                    if not found
+			 |
+			c/users/.../node_modules folder
+				
+                            |
+			 if found, load from here
+			    |
+                            if not ,it will throw error-module not found 
+
+
+
+
+require('./module')
+         it searches the current project folder
+
+
+**********************************************************************************************
+
+Global modules :  used for tool purpose.
+
+ - build tools
+ - compilers
+ - Testing runtimes- Mocha,Jasmine,Protractor
+ - Servers - ready made webservers,testing servers,automation servers
+.....
+
+ npm install module -g
+
+Eg:
+
+ mocha -
+
+npm install mocha -g
+
+C:\Users\sasub\AppData\Roaming\npm
+
+mocha --version
+8.0.1
+*********************************************************************************************
+automation: running scripts , which executes some tasks
+.............................................................................................
+
+in node applications, automation is taken care by npm tool.
+
+how to start automation?
+ -package.json , there is an entry 
+
+  "scripts"
+
+ key: value
+
+ key : command name
+ value : task to be executed
+
+ eg : if i want to application, through automation.
+
+note: 
+ command name is provided by npm itself : built in commands
+  eg: start,test,......
+ command also be user defined.
+  xxx,
+
+ "scripts": {
+    "start" : "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+
+how to run?
+
+ npm start ---npm commandName
+
+ npm run commandName - for user defined
+
+ "scripts": {
+    "start" : "node src/index.js",
+    "build": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+
+Global Modules and problems;
+...........................
+
+1.version mismatch for across many projects
+
+install all the tools as "dev-dependencies' inside project
+
+
+--
+npm install mocha --save-dev
+
+configure this inside scripts section: testing automation.
+*********************************************************************************************
+Async programming and its implementation:
+
+ -callbacks
+ -promises
+ -async .. await keywords
+
+What is async programming?
+
+
+conncurrency:
+
+Most of the programming languages - jvm is multi threaded
+javascript is not multithread - single thread.
+
+How to write async programming?
+
+Rules:
+
+1.async apis should be provided by node/js.
+ -eg:
+   timers - settimeout,setinterval
+   file system - to read and write files
+   networking apis-  tcp/ip , http
+  etc.....
+
+2.Handlers - functions , to handle/read async operation results -  callbacks
+  callbacks are just function which are passed as parameter to async api.
+
+
+
+//async programming.
+
+//using timer
+
+function  delay(callback){
+  setTimeout(callback,1000);
+}
+console.log('start')
+delay(function handler(){
+    console.log('Delay');
+});
+console.log('end');
+
+//
+function handle(handler){
+    setTimeout(handler,2000,"Welcome to Non blocking World!!!")
+}
+
+handle(function handler(data){
+    console.log(data);
+});
+*****************************************************************************************
+
+Problems with callback : CallbackHell
+
+//callback nesting
+//the output of one callback, will be input to another callback.
+///any code will have two things : 1. success(resolve), 2.failure(rejections)
+//getuser---success---login(user,success,failure)---|
+//getUser---failure --error---Stop
+
+
+function getUser(resolve,reject){
+ //mock data
+  var user = 'admin';
+  var errorMessage = 'User Not Found!';
+  if(user){
+        setTimeout(resolve,1000,user);
+  }else{
+       setTimeout(reject,1000,errorMessage)
+  }
+
+}
+function login(user,resolve,reject){
+    var errorMessage = 'Login failed';
+    var successMessage ='Login success';
+    if(user === 'admin'){
+          setTimeout(resolve,1000,successMessage);
+    }else{
+         setTimeout(reject,1000,errorMessage)
+    }
+   
+}
+
+//caller
+getUser(function(user){
+    console.log('User api is called')
+    //callback nesting
+     login(user,function(success){
+       console.log(success)        
+     },function(failure){
+        console.log(failure);
+     });
+} , function(err){
+   console.log(err);
+})
+
+if you look at the above code ask your self
+
+1.code is readable?
+2.code is maintainable
+3.code is scalable
+ 
+No :  this is called as "callback hell"
+
+how to fix callback hell, how to write good code?
+->Ans : Promise
+
+What is promise?
+
+ Promise is design pattern , introduced to avoid callback hell. 
+
+Since it is design pattern, we need implementation.
+
+many vendors started writing promises
+
+1.jquery
+2.many vendors
+
+3.In 2012 , js community who added promises in language itself as 
+Object.
+
+ Promise Object
+..................
+
+Promise object can be created in two ways
+
+1.Factory api
+   
+2.using Constructors 
+
+Note : By default Promise is async, which internally implments timer with 0 ms.
+
+
+methods :
+ 1.resolve
+ 2.reject
+ 3.then
+ 4.catch
+ 5.finally
+ etc...
+//Promise
+/**
+ * 1.create Promise object using factory apis
+ * 
+ */
+
+ //callback success only
+//  function getData(callback){
+//    setTimeout(callback,0,"some data");
+//  }
+//  getData(function(data){
+//      console.log(data)
+//  })
+
+//Promise success only
+function getData(){
+    return Promise.resolve('Some data');
+}
+console.log('start')
+getData().then(function(res){
+    console.log(res);
+});
+console.log('end');
+
+//error only
+function getError(){
+    return Promise.reject('Some error');
+}
+getError().catch(function(res){
+    console.log(res);
+});
+
+//how to return success/failure
+
+function getUser(){
+    //mock data
+     var user = 'admin';
+     var errorMessage = 'User Not Found!';
+     if(user){
+          return Promise.resolve(user)
+     }
+     return Promise.reject(errorMessage)   
+   
+}
+
+function login(user){
+    var errorMessage = 'Login failed';
+    var successMessage ='Login success';
+    if(user === 'admin'){
+        return Promise.resolve(successMessage)
+    }
+    return Promise.reject(errorMessage)      
+}
+getUser()
+  .then(function(res){
+      console.log('user api is called!!!');
+      return login(res)
+  })
+  .then(function(res){
+      console.log(res)
+  })
+  .catch(function(res){
+    console.log(res);
+ })
+ .finally(function(){
+     console.log('finally')
+ });
+//////////////////////////////////////////////////////////////////////////////////
+//Promise constructors : to convert exsiting callback apis to promise powered.
+
+function getCustomer(){
+    //mock data
+     var user = 'customer';
+     var errorMessage = 'Customer Not Found!';
+     return new Promise(function(resolve,reject){
+        if(user){
+            setTimeout(resolve,2000,user);
+        }else{
+            setTimeout(reject,2000,errorMessage)
+        }
+     });
+   
+}
+getCustomer().then(function(res){
+    console.log(res);
+}).catch(function(res){
+    console.log(res);
+ })
+ .finally(function(){
+     console.log('customer finally')
+ });
+
+
+Promise hell:
+ if we consumes promises, we need to process with multi then and catch.
+
+async await: 
+ it is abstraction for handling promises in
+ 
+
+//async..await
+/**
+ * async is keyword used infront of function : async function
+ * async function by default may return Promise.resolve
+ */
+async function getDefaultData(){
+    return 'Hello'; //Promise.resolve('Hello');
+}
+getDefaultData().then(function(res){
+    console.log(res);
+})
+// async function getError(){
+//     return Promise.reject('something went wrong');
+// }
+// getError().catch(function(err){
+//     console.log(err);
+// })
+///////////////////////////////////////////////////////////////////////////////////
+//callee
+
+function  getUser(){
+      //mock data
+      var user = 'admin';
+      var errorMessage = 'User Not Found!';
+      if(user){
+           return Promise.resolve(user)
+      }
+      return Promise.reject(errorMessage)  
+}
+function login(user){
+    var errorMessage = 'Login failed';
+    var successMessage ='Login success';
+    if(user === 'admin'){
+        return Promise.resolve(successMessage)
+    }
+    return Promise.reject(errorMessage)      
+}
+//caller 
+async function process(){
+    // getUser().then(function(res){
+    //     console.log(res)
+    // }).catch(function(err){
+    //     console.log(err);
+    // })
+
+ try{
+    var user = await getUser();
+    //call login method
+    var status = await login(user);
+    console.log(status)
+ }
+ catch(err){
+     console.log(err)
+ }
+ finally{
+     console.log('finally')
+ }
+
+}
+process();
+
+********************************************************************************************
+Typescript:
+...........
+
+What is typescript?
+
+ Typescript scales javascript.
+ scales -Expanding the features of javascript.
+
+javascript and entrise computing:
+
+1.js is type less /dynamic typed language.
+2.js is not object oriented , object  base.
+
+
+How to make object oriented javascript?
+
+
+---In 2012 , javascript team : ECMA Committte provided a spce
+ -ES 6 Spec - new version of javascript.
+
+es6 features
+1.class
+2.arrow functions
+3.Promise
+4.async and await keywords
+......
+
+2012 - ms started a project on es 6 + typing + extra features = typescript.
+
+Typescript is super set of javascript.
+
+Typescript:
+
+1.it is language, cant be exectued on browser/node directly
+  we need to compile into javascript.
+
+hello.ts ---compile----hello.js---execute.
+
+********************************************************************************************
+
+Typescript project:
+
+1.compiler - is npm dependency
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
