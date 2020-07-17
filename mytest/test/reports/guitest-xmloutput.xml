@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites disabled="0" errors="0" failures="0" tests="2" time="7.768">
+ <testsuite name="hello suit" timestamp="2020-07-15T10:54:37" hostname="localhost" time="7.768" errors="0" tests="2" skipped="0" disabled="0" failures="0">
+  <testcase classname="hello suit" name="hello test case" time="0.005" />
+  <testcase classname="hello suit" name="should have a title" time="7.762" />
+ </testsuite>
+</testsuites>

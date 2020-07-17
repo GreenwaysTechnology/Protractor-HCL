@@ -553,7 +553,7 @@ Promise hell:
  if we consumes promises, we need to process with multi then and catch.
 
 async await: 
- it is abstraction for handling promises in
+ it is abstraction for handling promises 
  
 
 //async..await
@@ -1137,50 +1137,1645 @@ Hierachy : has-a dependency injection.
  }
  let sb = new SavingsAccount();
  console.log(sb.withdraw(), sb.calcualteInterest(1000,2),sb.deposit(12000));
+**********************************************************************************************
+java script modularities:
+
+1.commonjs -
+2.es 6 modularity  =  commonjs + AMD
+  =>TO share code across the application.
+
+commonjs              es6 
+ require()            import
+ exports              export
+ module.exports       export default
+
+
+Note: any modularity code never works directly inside browser.
+
+commonjs code inside browser:
+
+es 6 modules are not supported inside browser but node supports by default.
+
+ts compiler compiles code into commonjs format by default.
 
 
 
 
+class LoginPage {
+    constructor(){
+        console.log('login page')
+    }
+    getTextElement():Promise<any>{
+        return Promise.resolve('TextBox');
+    }
+}
+
+export default LoginPage;
 
 
 
+//export statment uses {} to import 
+import {firstName,lastName,city,sayHello} from './mylib';
+//export default , which does not use {}
+import LoginPage from './page/login.page';
 
 
+console.log(firstName,lastName,city,sayHello());
+
+async function start(){
+  let lgPage = new LoginPage();
+  let result = await lgPage.getTextElement();
+  console.log(result);
+}
+start();
+********************************************************************************************
+
+Protractor:
+...........
+
+What is protractor? 
+
+ Protractor is an end-to end testing framework written for angular js and angular application.
+
+How to test application end to end?
+
+ 1.manuall testing.
+   testing apps based on req, whether is working as expected.
+
+Automation :
+
+ on Behalf of user or user like , programs start testing applications.
+
+Browser based on Automation for testing:
+
+Selienum is Program written in throughtworks late 2004 for automating web application in written java.
+
+Protractor is written based on selenium working model.
+     -WebDriver
+
+What is WebDriver?
+  WebDriver is software bridge for browsers.
+
+WebDriver is  an official  spec of w3c.
+
+WebDriver is a remote control interface that enables introspection and control of user agents. It provides a platform- and language-neutral wire protocol as a way for out-of-process programs to remotely instruct the behavior of web browsers.
+
+Provided is a set of interfaces to discover and manipulate DOM elements in web documents and to control the behavior of a user agent. It is primarily intended to allow web authors to write tests that automate a user agent from a separate controlling process, but may also be used in such a way as to allow in-browser scripts to control a — possibly separate — browser.
+
+ ->Spec for testers to test webdocuments with help of common interfaces to discover dom elements and mainupulate dom elements.
 
 
+What is webdriver js?
 
+  It is reference implementation of "WebDriver" written in java script language. 
 
+*********************************************************************************************
 
+Why web driver js? why not selenium server for testing web application with respect to javascript apps?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Web Driver js is lib primarily written for javascript applications on browsers.Web Driver js works with real dom directly.
  
 
+npm install selenium-webdriver
+
+var webdriver = require('selenium-webdriver'),
+    By = webdriver.By,
+    until = webdriver.until;
+
+var driver = new webdriver.Builder()
+    .forBrowser('chrome')
+    .build();
+
+driver.get('http://www.webdriverjs.com/');
+driver.findElement(By.css('.search-field.form-control')).sendKeys("WebdriverJs");
+driver.findElement(By.css('button.search-submit i')).click();
+driver.wait(until.elementTextIs(driver.findElement(By.css('.vl-main-header>h1')), "Search Results for: WebdriverJs"), 10000);
+
+
+Can i test angular js /angular apps using  "webdriverjs"?
+
+  Yes! but not completely.
+
+Why?
+
+ Angular framwork written based on a spec called "Custom Elements/Web Element" 
+
+HTML is language provides lot of tags/elements -  are built in - h1,div,img,input,span...
+
+these elements are understood by browsers.
+  <div id="test">
+
+ <hello>----try to evaluate---if element---present --- executed by browser
+    |
+     if not present
+         |
+2008 w3c published an spec : custom element spec , we can create custom elements and also custom attribues
+
+  <div mymessage="test">
+
+Angular was written based on this spec.
+
+Protractor was created along with webdriverjs with "custom element" manipulation.
+***********************************************************************************************
+
+Protractor Architecture:
+
+It is node programm.
+
+
+Basic
+			 Test
+			   |
+			Protractor
+			   |
+			WebDriverjs<----->Driver<----->Browser(DOM)
+			  |
+			 Node
+
+
+
+	                Test
+			   |
+			Protractor
+			   |
+			WebDriverjs<--------->Selenimum----Driver------Browser
+			  |.
+			 Node
+
+
+Three major components
+
+1.Tests
+   Here we have written test scripts(programs) which are sent to seleninum server
+
+2.Selenium Server
+   Interaction with browsers
+
+3.Browser Drivers
+   It interacts with application on the real browser
+    
+
+
+Protractor-------http------Selenium------JSON wire Protrocal-----Browser Drivers<--->Browser
+
+
+Programm level flow:
+ With Protractor, the test script is run using Node.js. Protractor runs an extra command before performing any action on the browser to ensure that the application being tested has stabilized. For example, let's look at the following snippet of test code.
+
+
+
+Protractor test code:
+
+ element(by.css('button.myclass')).click();
+
+
+Code sent by Protractor:
+.........................
+
+This will result in three commands being sent to the Browser Driver
+
+/session/:sessionId/execute_async - First, Protractor tells the browser to run a snippet of JavaScript. This is a custom command which asks Angular to respond when the application is done with all timeouts and asynchronous requests, and ready for the test to resume.
+
+/session/:sessionId/element - Then, the command to find the element is sent.
+
+/session/:sessionId/element/:id/click - Finally the command to perform a click action is sent.
+
+
+These operations are not sync , rather than async.
+
+Webdriverjs apis are promises powered.
+*********************************************************************************************
+
+WebDriverjs/Protractor and Control Flow:
+...........................................
+
+
+As we disucssed every element call, is async , it returns promise.
+
+Sequence of calls like below
+
+element(by.css('button1.myclass')).click();
+
+element(by.css('button2.myclass')).click();
+
+element(by.css('button3.myclass')).click();
+
+ Webdriverjs internally maintains a queue of pending promises called as "Control Flow"
+
+How control flow is managed by webdriver js?
+
+**********************************************************************************************
+
+WebDriver apis:
+  WebDriver apis are async by nature, it returns promises.
+
+eg:
+npm install selenium-webdriver
+
+
+const {Builder, By, Key, until} = require('selenium-webdriver');
+
+(async function example() {
+  let driver = await new Builder().forBrowser('firefox').build();
+  try {
+    await driver.get('http://www.google.com/ncr');
+    await driver.findElement(By.name('q'));.sendKeys('webdriver', Key.RETURN);
+    await driver.wait(until.titleIs('webdriver - Google Search'), 1000);
+  } finally {
+    await driver.quit();
+  }
+})();
+*************************************************************************
+
+Protractor vs WebDriver apis:
+
+var webdriver = require('selenium-webdriver');
+var browser = new webdriver.Builder().usingServer().withCapabilities(c).build();
+
+
+In Protractor, you are provided with "global protractor and browser objects", which more or less match the webdriver and browser objects, respectively. So if you are already familiar with writing WebDriver code, the most basic way to start writing Protractor code is just to replace webdriver with protractor.
+
+However, Protractor also provides some syntactic sugar to help you write your tests.
+ 
+var webdriver = require('selenium-webdriver');
+var browser = new webdriver.Builder().usingServer().withCapabilities(c).build();
+
+webdriver.by
+
+
+by()
+brower.findElement() --- element()
+
+Protractor interall calls webdriverjs api only.
+
+ function by(input){
+    webdriver.by(input)
+ }
+**********************************************************************************************
+
+Protractor and Testing frameworks:
+
+Select Which framework you want to work with:
+
+Protractor supports:
+
+1.jasmin 2.x
+2.mocha , with chai
+3.Cucumber
+4.Serenity/JS
+5.Using a Custom Framework
+
+Protractor offers
+
+ -DOM access
+ -communication with browsers and servers
+ -run test cases
+ .....
+
+What about coding?
+  can be written using testing frameworks.
+
+testing framework offers
+
+ 1.code organization
+ 2.assertions
+
+code organization : 
+   test suite
+   test case  
+   reports
+
+Protractor largly optizmized , support for "Jasmine2" , default testing framework.
+
+ describe
+   it
+     expect
+
+Angular + Jasmine + Protractor = Right combination.
+
+DSL : Domain specific languages
+  code must be in plain english rather than formal programming syntax.
+
+ eg:
+   deposit 100 rs in account no 239098 - code written in groovy - dsl - bdd
+
+*********************************************************************************************
+
+Protractor Setup:
+ Style Guide : best pratices when you create testing application.
+
+****************************************************
+
+Two types of projects
+
+1.non angular setup
+
+2.angular setup
+
+
+1.node js
+
+2.install protractor
+  npm install protractor -g 
+
+3.update webdriver-manager
+
+1.two dependencies
+ -protractor
+ -webdriver-manager
+
+**************************************************************************************
+
+protractor.conf.js
+
+//configuration for protractor is injected into protractor runtime as object. Which must be exported 
+//
+exports.config = {
+    //protractor configuration.
+    framework: 'jasmine', // which testing framework you want to integrate
+    seleniumAddress: 'http://localhost:4444/wd/hub',
+    capabilities: {
+       'browserName': 'chrome'
+    },
+    specs: ['tests/hello.spec.js'],
+   
+}
+tests/hello.spec.js
+//jasmine test suit
+
+describe('some suite',function(){
+
+    //test case
+    it('some test',function(){
+     let a = true;
+        //assertions
+        expect(a).toBe(true);
+    })
+
+});
+
+Runnning :
+
+ webdriver-manager start  // start server
+
+Running:
+ protractor
+**********************************************************************************************
+
+Test Suit
+
+Test Case
+
+Assertions
+
+
+Jasmine Use case:
+
+//jasmine test suit
+
+describe('some suite',function(){
+
+    //resource intialization once all test cases
+    beforeAll(function(){
+        console.log('before all is called')
+    });
+    //resource initalization for each test cases
+    beforeEach(function(){
+        console.log('before each is called')
+    })
+
+    //test case
+    it('some test : 1 ',function(){
+     let a = true;
+        //assertions
+        expect(a).toBe(true);
+    })
+    //test case
+    it('some test : 2',function(){
+        let a = true;
+           //assertions
+           expect(a).toBe(true);
+    })
+
+    ///async calls and testing
+
+    afterEach(function(){
+        console.log('after each')
+    })
+    afterAll(function(){
+       console.log('after all')
+    });
+
+
+});
+
+//jasmine test suit
+
+describe('some suite',()=>{
+
+    //resource intialization once all test cases
+    beforeAll(()=>{
+        console.log('before all is called')
+    });
+    //resource initalization for each test cases
+    beforeEach(()=>{
+        console.log('before each is called')
+    })
+
+    //test case
+    it('some test : 1 ',()=>{
+     let a = true;
+        //assertions
+        expect(a).toBe(true);
+    })
+    //test case
+    it('some test : 2',()=>{
+        let a = true;
+           //assertions
+           expect(a).toBe(true);
+    })
+
+    ///async calls and testing
+
+    afterEach(()=>{
+        console.log('after each')
+    })
+    afterAll(()=>{
+       console.log('after all')
+    });
+
+
+});
+
+*******************************************************************************************
+Mocha configuration:
+
+npm install -g mocha
+npm install chai --save-dev
+npm install chai-as-promised --save-dev
+
+
+//configuration for protractor is injected into protractor runtime as object. Which must be exported 
+//
+
+exports.config = {
+    //protractor configuration.
+    framework: 'mocha', // which testing framework you want to integrate
+    seleniumAddress: 'http://localhost:4444/wd/hub',
+    capabilities: {
+       'browserName': 'chrome'
+    },
+    specs: ['tests/hello.mocha.spec.js'],
+   
+}
+
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
+var expect = chai.expect;
+
+
+describe('Mocha with protractor', function() {
+  it('should still do normal tests', function() {
+    expect(true).to.equal(true);
+  });
+});
+
+
+
+Cucumber integration:
+.....................
+
+npm install -g cucumber
+npm install --save-dev protractor-cucumber-framework
+
+
+Set the 'framework' property to custom by adding framework: 'custom' and frameworkPath: 'protractor-cucumber-framework' to the config file(cucumberConf.js)
+
+exports.config = {
+   seleniumAddress: 'http://localhost:4444/wd/hub',
+
+   baseUrl: 'https://angularjs.org/',
+
+   capabilities: {
+      browserName:'Firefox'
+   },
+
+   framework: 'custom',
+
+   frameworkPath: require.resolve('protractor-cucumber-framework'),
+
+   specs: [
+      './cucumber/*.feature'
+   ],
+
+   // cucumber command line options
+   cucumberOpts: {
+      require: ['./cucumber/*.js'],
+      tags: [],
+      strict: true,
+      format: ["pretty"],
+      'dry-run': false,
+      compiler: []
+   },
+   onPrepare: function () {
+      browser.manage().window().maximize();
+   }
+};
+************************************************************************************
+Browser Configurations:
+
+ As we said , protractor sends commands to browser/server , where dirvers will take care of
+mocking/testing web page like real user.
+
+protractor -----protractor.conf.js----->starts executing test cases | browser
+         protractor ------webdriverjs-----server---drivers
+
+Note : driver version and browser version must  match else you will error.
+
+session not created:driver mismatch.
+
+  Look at driver version
+          chromedriver_84.0.4147.30  <---> 84.0.4147.89 - chrome browser version must
+  
+Basic browser configuration:
+
+ capabilities: {
+       'browserName': 'chrome'
+ }
+
+multi browser configuration:
+  multiCapabilities: [{
+        'browserName': 'chrome'
+     },{
+        'browserName': 'firefox'
+     }]
+ }
+
+ 
+Headless Architecuture:
+.......................
+
+   capabilities: {
+       'browserName': 'chrome',
+       'chromeOptions': {
+           'args': ["--headless", "--disable-gpu", "--window-size=800,600"]           
+        },
+       
+    }
+**********************************************************************************************
+
+Protractor for DOM Testing:
+..........................
+
+HTML Elements:
+
+Markup :
+
+
+hello.java--compiler---hello.class---jvm---execute----output
+
+
+source code
+<body>
+    <div>
+        <h1>Hello Protractractor</h1>
+    </div>
+</body>
+
+index.html ----loads--browser--> Lexcial parser--parse --string tree
+
+parsed code
+
+ body
+    |
+    div
+       |
+        h1 
+         |
+           Hello Protractractor 
+         h1
+     |
+     div
+     |
+ body
+
+
+
+index.html ----loads--browser--> Lexcial parser--parse --string tree-->will move the parsed
+code into main memory
+
+allocate memory;
+  --->create linked list --- tree model --written in c language
+
+Linked List
+ body - Node
+    | 
+    div Node
+       |
+        h1 -Node 
+         |
+           Hello Protractractor 
+         h1
+     |
+     div
+     |
+ body
+Node Types
+
+1.parent node
+2.child node
+3.sibilings node
+
+
+javascript represents each node as "Object" called as DOM
+
+every html element is object in javascript. we call dom node.
+
+since every html element is object , 
+
+ ->properties
+ ->methods
+
+if you want to create object  , you need class/function.
+
+HTML Element                 Low level Javascript object Interface  ---
+<img>                        HTMLImageElement                       
+...                          ....
+
+
+How to get/create Object of any element?
+
+ Note : in javascript DOM objects are not created by using new keyword , rather they use
+factory methods only.
+
+let mydiv:HTMLDivElement  = docment.createElement('div')
+
+
+Objects                                 (built in instance variables)
+
+ 1.Browser - core /container objects  --- browser 
+ 2.Document                           ----document
+ 3.other objects                       --- document.getelementbyid() / getElements /getelementsbytagname
+
+
+HTMLELEMENT getElementByid('id')
+
+HTMLELEMENTCollection getelementsbytagname('p');
+HTMLElementCollection document.queryselector('css selector')
+
+css selectors
+  Are rules applied to element /s to change styles
+
+css selector syntax can be used to get elements in programming world.
+
+*******************************************************************************************
+
+Protractor and DOM : Protractor apis
+.....................................
+
+In protractor these are globals.
+
+browser - variable to communicate and get browser specific properties
+   === window in javascript
+
+ElementFinder element(Locator) : single element
+                   document.queryselector('css selector')
+ Locator is object which represents /contains apis related to query the elements - selector apis
+
+ElementArrayFinder   element.all(Locator) : Collection 
+
+*****************************************************************************************************
+
+Write First Protractor test:
+............................
+
+Protractor by default looks angular apps:
+
+//Get DOM under test
+
+describe('Protractor : DOM Testing',()=>{
+
+    let url;
+    beforeEach(()=>{
+        url='http://juliemr.github.io/protractor-demo/';
+    });
+    //case 1
+    it('some webite',()=>{
+      
+        //load website under test
+         browser.get(url);
+         //expect 
+         expect(browser.getTitle()).toEqual('Super Calculator')
+
+
+    })
+
+});
+*******************************************************************************************************
+
+
+ElementFinder  element(Locator)
+
+Locator: webdriver.By.selector
+  by.css ---------- return Element
+  by.id
+  by.model
+  by.binding
+  by.name
+  by.tagName
+  by.xpath ->Dont use.
+  by.linkText
+  by.className
+
+
+ElementFinder element(by.model('first'))
+
+You can execute methods of ElementFinder after getting.
+
+     let ele = element(by.model('first'))
+     ele.method
+
+Common methods:
+
+1.getText() 
+  webdriver.promise.Promise.<string> getText()
+         A promise that will be resolved with the element's visible text.
+  
+sending input along with event
+2.sendKeys('mock value',eventName)
+
+
+
+//Get DOM under test
+
+
+describe('Protractor : DOM Testing',()=>{
+
+    let url;
+    beforeEach(()=>{
+        url='http://juliemr.github.io/protractor-demo/';
+    });
+    //case 1
+    it('Site Title ',()=>{
+       //load website under test
+         browser.get(url);
+         //expect 
+         expect(browser.getTitle()).toEqual('Super Calculator')
+    })
+    //case 2
+    it('Should add two numbers',()=>{
+        //load url under test
+        browser.get(url);
+        //getlement and set values
+        element(by.model('first')).sendKeys(100);
+        element(by.model('second')).sendKeys(100);
+       //trigger click event
+        element(by.id('gobutton')).click();
+        //if i want to see for browser some time
+        //expectation
+        let result =element(by.binding('latest'))
+        expect(result.getText()).toEqual('200');
+        browser.sleep(5000);
+
+
+    });
+
+});
+
+if you look at the above, we have dumbed textbox logic inside one text case.
+what if the same textbox value i want test for different use cases
+like below
+    it('first textbox should contain only postive number',()=>{
+        element(by.model('first')).sendKeys(-100);
+    
+    })
+    it('first textbox should not  contain special character',()=>{
+        element(by.model('first')).sendKeys(100);    
+    })
+
+do you think , the code is scalable , no. - code duplication
+
+How to solve this?
+  
+ There is design pattern , called "Page Object".
+
+Page Object  which is Object, has lot of methods , which returns elements.
+
+We will implement page Object, in angular : we will follow angular best practices
+
+
+Style Guide:
+ e2e
+     src
+      |-- page-objects
+          home-page.js
+          profile-page.js
+          contacts-page.js
+      home-spec.js
+      profile-spec.js
+      contacts-spec.js
+*****************************************************************************************************
+
+Angular :
+
+Steps:
+
+1.install angular cli
+  >npm install -g @angular/cli
+
+1.create Angular
+
+
+Point : as in typescript
+
+interface Person{
+ ...
+}
+
+class User{
+  
+}
+
+let user = new User();
+let user:User = new User();
+let user:Person =new User();
+let user = new User() as Person;  as- type alise
+
+
+import { browser, by, element, ElementArrayFinder } from 'protractor';
+
+export class AppPage {
+  //methods
+  navigateTo(): Promise<unknown> {
+    return browser.get(browser.baseUrl) as Promise<unknown>;
+  }
+
+  getTitleText(): Promise<string> {
+    return element(by.css('app-root span')).getText() as Promise<string>;
+  }
+  getSpan():ElementFinder {
+    return element(by.css('app-root span')) as ElementFinder;
+  }
+
+  //new
+  getListItems():ElementArrayFinder{
+    // return list item elements not content
+     return element.all(by.css('.items li')) as ElementArrayFinder
+  }
+}
+
+element() ----Returns a DOM object
+   DOMOBJECT.getText().then(v=>v)
+   await DOMOBJECT.getText() ===>value
+ 
+element.all()---Returns list of DOM object
+
+*******************************************************************************************
+Collections Api:
+ In javascript we have iterator api
+
+1.forEach: -each
+    it will walk through each element inside array:
+   you can log/print that element.
+
+2.map :
+  It is called as transformation api. which transforms array item into some thing
+
+ 1,2,3,4,5 ===> map(item=>item *2)  === 1,4,6...
+
+getRows : ElementArrayFinder()
+rows = element.all(by.repeater("cust in Customers | orderBy:sortType:sortReverse | filter:searchCustomer"));
+this.rows.each(async (eachrow: any)=> {
+  letcells = eachrow.$$("td"); 
+  log4jsconfig.Log().debug(await cells.get(0).getText());
+});
+
+3.filter api : Predicate api : based on boolean condition.
+
+*****************************************************************************************************
+
+import { AppPage } from './app.po';
+import { browser, logging } from 'protractor';
+
+describe('workspace-project App', () => {
+  let page: AppPage;
+
+  beforeEach(() => {
+    page = new AppPage();
+  });
+
+  it('should display welcome message', () => {
+    page.navigateTo();
+    expect(page.getTitleText()).toEqual('welcome');
+  });
+
+  //List 0th item verfication
+  it('List item oth item verification',()=>{
+    let list = page.getListItems();
+    expect(list.get(0).getText()).toBe('First');
+  });
+
+  it('List item 1th item verification',()=>{
+    let list = page.getListItems();
+    expect(list.get(1).getText()).toBe('Second');
+  });
+
+  it('List item with filter verification',()=>{
+    let list = page.getListItems();
+    //wether list contains 'Third' Value or not.
+    let filteredResult = list.filter((elem, index)=> {
+      return elem.getText().then(function(text) {
+        return text === 'Third';
+     });
+    });
+    filteredResult.map(async (item)=>{
+       let value =await item.getText();
+       console.log("value " + value);
+    });
+  });
+
+  it('List item should contain 3 items',()=>{
+    expect(page.getListItems().count()).toBe(3);
+  });
+
+  afterEach(async () => {
+    // Assert that there are no errors emitted from the browser
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+   
+    expect(logs).not.toContain(jasmine.objectContaining({
+      level: logging.Level.SEVERE,
+    } as logging.Entry));
+  });
+});
+*******************************************************************************************
+Mock data / Test data for automation:
+....................................
+
+In general Mock data / test data , we feed manually in manuall testing.
+
+In automation, we feed data through code. 
+
+ways
+1.static /hard coded data.
+  textbox1 - 10
+  textbox2 - 20
+  a + b = 30
+what if i want to test my application with various data sets.
+we need to externalize the test data  into a file.
+
+File can be 
+ csv,json,xml,Excel.......
+
+How to read data from the Excel and feed into protractor.
+
+Note: any file, node offers an node modules.
+
+
+Steps:
+1.npm install xlsx
+2.read values from excel sheet.
+
+//Get DOM under test
+let XLSX = require('xlsx')
+
+describe('Protractor : DOM Testing',()=>{
+
+    let url;
+    beforeEach(()=>{
+        url='http://juliemr.github.io/protractor-demo/';
+    });
+    //case 1
+    it('Site Title ',()=>{
+       //load website under test
+         browser.get(url);
+         //expect 
+         expect(browser.getTitle()).toEqual('Super Calculator')
+    })
+    //case 2
+    it('Should add two numbers',()=>{
+    
+        //load url under test
+        browser.get(url);
+        //read excel file
+        let workbook =  XLSX.readFile('./testdata.xlsx')
+        let worksheet = workbook.Sheets['Sheet1'];
+        let cellX='A2'
+        let cellY='B2'
+
+        console.log(worksheet[cellX].v,worksheet[cellY].v)
+       
+        //getlement and set values
+        element(by.model('first')).sendKeys(worksheet[cellX].v);
+        element(by.model('second')).sendKeys(worksheet[cellY].v);
+       //trigger click event
+        element(by.id('gobutton')).click();
+        //if i want to see for browser some time
+        //expectation
+        let result =element(by.binding('latest'))
+        expect(result.getText()).toEqual('200');
+        browser.sleep(5000);
+
+    });
+    it('first textbox should contain only postive number',()=>{
+        element(by.model('first')).sendKeys(-100);
+    
+    })
+    it('first textbox should not  contain special character',()=>{
+        element(by.model('first')).sendKeys(100);    
+    })
+
+});
+**********************************************************************************************
+
+Parallel Excution:
+
+ Running multiple things simulataneiously.
+
+Two ways you execute paralle exuction:
+
+1.Multi brower
+     In order to run protractor tests on multiple browsers.
+ We can multi browsers through multiCapabilities configuration in config file   
+
+2.Multi Specs in Paralle 
+   we are dividing total no of test specs across the multi instance of same browser.
+   
+ We have two capabilities
+  1.sharedTestFiles : true
+    To enable sharing of tests at the spec level,we must configure this property
+  2.maxInstances: no of instances
+     no of instances represents the maximum number of browsers windows that protractor
+   should in paralle.
+ 
+eg:
+   if we set maxinstance 2, a test suit of 100 test would result in propractor creating
+   2 chorme instances with each instance running to 50 each. 
+ 
+Programmetic paralle excution:
+
+  browser.forkNewDriverInstance(opt_useSameUrl, opt_copyMockModules)
+*********************************************************************************************
+Test reports:
+
+1.html reports
+2.snapshot for failure.
+
+Protractor Life cycles apis:
+
+beforeLaunch
+onPrepare
+onComplete
+onCleanUp
+afterLaunch
+
+Steps:
+
+1.install report depedence
+npm i protractor-html-reporter-2
+
+2.config file
+
+//configuration for protractor is injected into protractor runtime as object. Which must be exported 
+//
+
+exports.config = {
+    //protractor configuration.
+    framework: 'jasmine', // which testing framework you want to integrate
+    //seleniumAddress: 'http://localhost:4444/wd/hub',
+    directConnect: true,
+    capabilities: {
+        'browserName': 'chrome',
+        'shardTestFiles': true,
+        'maxInstances': 4
+
+        //    'chromeOptions': {
+        //        'args': ["--headless", "--disable-gpu", "--window-size=800,600"]           
+        //     },
+
+    },
+    // multiCapabilities: [{
+    //     'browserName': 'chrome'
+    //  },{
+    //     'browserName': 'firefox'
+    //  }],
+    specs: ['tests/*.spec.js'],
+    onPrepare: function () {
+        var jasmineReporters = require('jasmine-reporters');
+        jasmine.getEnv().addReporter(new jasmineReporters.JUnitXmlReporter({
+            consolidateAll: true,
+            savePath: './',
+            filePrefix: 'xmlresults'
+        }));
+
+        var fs = require('fs-extra');
+
+        fs.emptyDir('screenshots/', function (err) {
+            console.log(err);
+        });
+
+        jasmine.getEnv().addReporter({
+            specDone: function (result) {
+                if (result.status == 'failed') {
+                    browser.getCapabilities().then(function (caps) {
+                        var browserName = caps.get('browserName');
+
+                        browser.takeScreenshot().then(function (png) {
+                            var stream = fs.createWriteStream('screenshots/' + browserName + '-' + result.fullName + '.png');
+                            stream.write(new Buffer(png, 'base64'));
+                            stream.end();
+                        });
+                    });
+                }
+            }
+        });
+    },
+    onComplete: function () {
+        var browserName, browserVersion;
+        var capsPromise = browser.getCapabilities();
+
+        capsPromise.then(function (caps) {
+            browserName = caps.get('browserName');
+            browserVersion = caps.get('version');
+            platform = caps.get('platform');
+
+            var HTMLReport = require('protractor-html-reporter-2');
+
+            testConfig = {
+                reportTitle: 'Protractor Test Execution Report',
+                outputPath: './',
+                outputFilename: 'ProtractorTestReport',
+                screenshotPath: './screenshots',
+                testBrowser: browserName,
+                browserVersion: browserVersion,
+                modifiedSuiteName: false,
+                screenshotsOnlyOnFailure: true,
+                testPlatform: platform
+            };
+            new HTMLReport().from('xmlresults.xml', testConfig);
+        });
+    }
+
+}
+*********************************************************************************************
+
+Timeouts:
+..........
+
+Timeouts from Protractor
+..........................
+
+1.page Load : wait time for page load
+
+2.Angular App : waiting for Angular
+
+
+Timouts from WebDriver:
+..........................
+1.Async Script 
+
+Timeout for Jasmine
+**********************************************************************************************
+
+How to test alerts,prompts:
+...........................
+
+
+describe('Interact with Alert', () => {
+    an
+    beforeAll(async () => {
+        await browser.get('https://letcode.in/alert')
+    })
+
+    fit('Simple Alert', async () => {
+        await element(by.buttonText("Simple")).click();
+        // console.log(await browser.getTitle());
+        await browser.sleep(3000);
+        (await browser.switchTo().alert()).accept()
+    });
+
+    it('Confirm Alert', async () => {
+        await element(by.buttonText('Confirm')).click();
+        await browser.sleep(3000);
+        console.log(await (await browser.switchTo().alert()).getText());
+        (await browser.switchTo().alert()).dismiss();
+    });
+
+    it('Prompt Alert', async () => {
+        await element(by.buttonText('Prompt')).click()
+        await browser.sleep(3000);
+        let alert = await browser.switchTo().alert();
+        await alert.sendKeys("koushik");
+        await alert.accept();
+    });
+
+    it('Sweet Alert', async () => {
+        await element(by.buttonText('Sweet')).click();
+        await browser.sleep(2000)
+        await element(by.buttonText('OK')).click();
+    });
+})
+
+**********************************************************************************************
+Tabs:
+
+describe('Interact with Tabs', () => {
+    beforeAll(async () => {
+        await browser.waitForAngularEnabled(false)
+        await browser.get('https://the-internet.herokuapp.com/windows')
+    })
+    it('Switch to new window', async () => {
+        let parentWindow = browser.getWindowHandle();
+        console.log(await browser.getTitle());
+        await element(by.linkText("Click Here")).click();
+        let wins = await browser.getAllWindowHandles();
+        console.log(wins);
+        console.log(wins.length);
+        await browser.switchTo().window(wins[1])
+        console.log(await browser.getTitle());
+        await browser.sleep(5000)
+
+    })
+
+})
+
+browser.switchTo() --- will help to access other objects
+ -prompt
+ -alert
+ -tabs - window
+ -frames
+ -Location - navigate method
+*******************************************************************************************
+
+Debuging Protractor
+
+lanuch.json
+
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "ProtractorDebugger",
+            "protocol": "inspector",
+            "program": "C:\\Users\\sasub\\AppData\\Roaming\\npm\\node_modules\\protractor\\bin\\protractor",
+            "args": [
+                "${workspaceFolder}\\protractor.conf.js"
+            ]
+        }
+    ]
+}
+Reference:
+https://medium.com/@ganeshsirsi/how-to-debug-protractor-tests-in-visual-studio-code-e945fc971a74
+
+**********************************************************************************************
+Sample Case study:
+
+Go to angular.io site, find tour of heroes app, download and starts running dev mode.
+
+and start writting e2e test for that site, code for app is given below.
+
+https://stackblitz.com/angular/ovnlgkrnedp?file=src%2Fapp%2Fhero.service.ts
+
+
+page Object template:
+
+import { browser, by, element } from 'protractor';
+
+export class AppPage {
+  navigateTo() {
+    return browser.get('/');
+  }
+
+  getParagraphText() {
+    return element(by.css('app-root h1')).getText();
+  }
+}
+
+
+app.spec.ts
+
+'use strict'; // necessary for es6 output in node
+
+import { browser, element, by, ElementFinder, ElementArrayFinder } from 'protractor';
+import { promise } from 'selenium-webdriver';
+
+const expectedH1 = 'Tour of Heroes';
+const expectedTitle = `${expectedH1}`;
+const targetHero = { id: 15, name: 'Magneta' };
+const targetHeroDashboardIndex = 3;
+const nameSuffix = 'X';
+const newHeroName = targetHero.name + nameSuffix;
+
+class Hero {
+  id: number;
+  name: string;
+
+  // Factory methods
+
+  // Hero from string formatted as '<id> <name>'.
+  static fromString(s: string): Hero {
+    return {
+      id: +s.substr(0, s.indexOf(' ')),
+      name: s.substr(s.indexOf(' ') + 1),
+    };
+  }
+
+  // Hero from hero list <li> element.
+  static async fromLi(li: ElementFinder): Promise<Hero> {
+      let stringsFromA = await li.all(by.css('a')).getText();
+      let strings = stringsFromA[0].split(' ');
+      return { id: +strings[0], name: strings[1] };
+  }
+
+  // Hero id and name from the given detail element.
+  static async fromDetail(detail: ElementFinder): Promise<Hero> {
+    // Get hero id from the first <div>
+    let _id = await detail.all(by.css('div')).first().getText();
+    // Get name from the h2
+    let _name = await detail.element(by.css('h2')).getText();
+    return {
+        id: +_id.substr(_id.indexOf(' ') + 1),
+        name: _name.substr(0, _name.lastIndexOf(' '))
+    };
+  }
+}
+
+describe('Tutorial part 6', () => {
+
+  beforeAll(() => browser.get(''));
+
+  
+  function getPageElts() {
+    let navElts = element.all(by.css('app-root nav a'));
+
+    return {
+      navElts: navElts,
+
+      appDashboardHref: navElts.get(0),
+      appDashboard: element(by.css('app-root app-dashboard')),
+      topHeroes: element.all(by.css('app-root app-dashboard > div h4')),
+
+      appHeroesHref: navElts.get(1),
+      appHeroes: element(by.css('app-root app-heroes')),
+      allHeroes: element.all(by.css('app-root app-heroes li')),
+      selectedHeroSubview: element(by.css('app-root app-heroes > div:last-child')),
+
+      heroDetail: element(by.css('app-root app-hero-detail > div')),
+
+      searchBox: element(by.css('#search-box')),
+      searchResults: element.all(by.css('.search-result li'))
+    };
+  }
+
+  describe('Initial page', () => {
+
+    it(`has title '${expectedTitle}'`, () => {
+      expect(browser.getTitle()).toEqual(expectedTitle);
+    });
+
+    it(`has h1 '${expectedH1}'`, () => {
+        expectHeading(1, expectedH1);
+    });
+
+    const expectedViewNames = ['Dashboard', 'Heroes'];
+    it(`has views ${expectedViewNames}`, () => {
+      let viewNames = getPageElts().navElts.map((el: ElementFinder) => el.getText());
+      expect(viewNames).toEqual(expectedViewNames);
+    });
+
+    it('has dashboard as the active view', () => {
+      let page = getPageElts();
+      expect(page.appDashboard.isPresent()).toBeTruthy();
+    });
+
+  });
+
+  describe('Dashboard tests', () => {
+
+    beforeAll(() => browser.get(''));
+
+    it('has top heroes', () => {
+      let page = getPageElts();
+      expect(page.topHeroes.count()).toEqual(4);
+    });
+
+    it(`selects and routes to ${targetHero.name} details`, dashboardSelectTargetHero);
+
+    it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
+
+    it(`cancels and shows ${targetHero.name} in Dashboard`, () => {
+      element(by.buttonText('go back')).click();
+      browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+
+      let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+      expect(targetHeroElt.getText()).toEqual(targetHero.name);
+    });
+
+    it(`selects and routes to ${targetHero.name} details`, dashboardSelectTargetHero);
+
+    it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
+
+    it(`saves and shows ${newHeroName} in Dashboard`, () => {
+      element(by.buttonText('save')).click();
+      browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+
+      let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+      expect(targetHeroElt.getText()).toEqual(newHeroName);
+    });
+
+  });
+
+  describe('Heroes tests', () => {
+
+    beforeAll(() => browser.get(''));
+    browser.sleep(1000);
+
+    it('can switch to Heroes view', () => {
+      getPageElts().appHeroesHref.click();
+      let page = getPageElts();
+      expect(page.appHeroes.isPresent()).toBeTruthy();
+      expect(page.allHeroes.count()).toEqual(10, 'number of heroes');
+    });
+
+    it('can route to hero details', async () => {
+      getHeroLiEltById(targetHero.id).click();
+
+      let page = getPageElts();
+      expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+      let hero = await Hero.fromDetail(page.heroDetail);
+      expect(hero.id).toEqual(targetHero.id);
+      expect(hero.name).toEqual(targetHero.name.toUpperCase());
+    });
+
+    it(`updates hero name (${newHeroName}) in details view`, updateHeroNameInDetailView);
+
+    it(`shows ${newHeroName} in Heroes list`, () => {
+      element(by.buttonText('save')).click();
+      browser.waitForAngular();
+      let expectedText = `${targetHero.id} ${newHeroName}`;
+      expect(getHeroAEltById(targetHero.id).getText()).toEqual(expectedText);
+    });
+
+    it(`deletes ${newHeroName} from Heroes list`, async () => {
+      const heroesBefore = await toHeroArray(getPageElts().allHeroes);
+      const li = getHeroLiEltById(targetHero.id);
+      li.element(by.buttonText('x')).click();
+
+      const page = getPageElts();
+      expect(page.appHeroes.isPresent()).toBeTruthy();
+      expect(page.allHeroes.count()).toEqual(9, 'number of heroes');
+      const heroesAfter = await toHeroArray(page.allHeroes);
+      // console.log(await Hero.fromLi(page.allHeroes[0]));
+      const expectedHeroes =  heroesBefore.filter(h => h.name !== newHeroName);
+      expect(heroesAfter).toEqual(expectedHeroes);
+      // expect(page.selectedHeroSubview.isPresent()).toBeFalsy();
+    });
+
+    it(`adds back ${targetHero.name}`, async () => {
+      const newHeroName = 'Alice';
+      const heroesBefore = await toHeroArray(getPageElts().allHeroes);
+      const numHeroes = heroesBefore.length;
+
+      element(by.css('input')).sendKeys(newHeroName);
+      element(by.buttonText('add')).click();
+
+      let page = getPageElts();
+      let heroesAfter = await toHeroArray(page.allHeroes);
+      expect(heroesAfter.length).toEqual(numHeroes + 1, 'number of heroes');
+
+      expect(heroesAfter.slice(0, numHeroes)).toEqual(heroesBefore, 'Old heroes are still there');
+
+      const maxId = heroesBefore[heroesBefore.length - 1].id;
+      expect(heroesAfter[numHeroes]).toEqual({id: maxId + 1, name: newHeroName});
+    });
+
+    it('displays correctly styled buttons', async () => {
+      element.all(by.buttonText('x')).then(buttons => {
+        for (const button of buttons) {
+          // Inherited styles from styles.css
+          expect(button.getCssValue('font-family')).toBe('Arial');
+          expect(button.getCssValue('border')).toContain('none');
+          expect(button.getCssValue('padding')).toBe('5px 10px');
+          expect(button.getCssValue('border-radius')).toBe('4px');
+          // Styles defined in heroes.component.css
+          expect(button.getCssValue('left')).toBe('194px');
+          expect(button.getCssValue('top')).toBe('-32px');
+        }
+      });
+
+      const addButton = element(by.buttonText('add'));
+      // Inherited styles from styles.css
+      expect(addButton.getCssValue('font-family')).toBe('Arial');
+      expect(addButton.getCssValue('border')).toContain('none');
+      expect(addButton.getCssValue('padding')).toBe('5px 10px');
+      expect(addButton.getCssValue('border-radius')).toBe('4px');
+    });
+
+  });
+
+  describe('Progressive hero search', () => {
+
+    beforeAll(() => browser.get(''));
+
+    it(`searches for 'Ma'`, async () => {
+      getPageElts().searchBox.sendKeys('Ma');
+      browser.sleep(1000);
+
+      expect(getPageElts().searchResults.count()).toBe(4);
+    });
+
+    it(`continues search with 'g'`, async () => {
+      getPageElts().searchBox.sendKeys('g');
+      browser.sleep(1000);
+      expect(getPageElts().searchResults.count()).toBe(2);
+    });
+
+    it(`continues search with 'e' and gets ${targetHero.name}`, async () => {
+      getPageElts().searchBox.sendKeys('n');
+      browser.sleep(1000);
+      let page = getPageElts();
+      expect(page.searchResults.count()).toBe(1);
+      let hero = page.searchResults.get(0);
+      expect(hero.getText()).toEqual(targetHero.name);
+    });
+
+    it(`navigates to ${targetHero.name} details view`, async () => {
+      let hero = getPageElts().searchResults.get(0);
+      expect(hero.getText()).toEqual(targetHero.name);
+      hero.click();
+
+      let page = getPageElts();
+      expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+      let hero2 = await Hero.fromDetail(page.heroDetail);
+      expect(hero2.id).toEqual(targetHero.id);
+      expect(hero2.name).toEqual(targetHero.name.toUpperCase());
+    });
+  });
+
+  async function dashboardSelectTargetHero() {
+    let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
+    expect(targetHeroElt.getText()).toEqual(targetHero.name);
+    targetHeroElt.click();
+    browser.waitForAngular(); // seems necessary to gets tests to pass for toh-pt6
+
+    let page = getPageElts();
+    expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');
+    let hero = await Hero.fromDetail(page.heroDetail);
+    expect(hero.id).toEqual(targetHero.id);
+    expect(hero.name).toEqual(targetHero.name.toUpperCase());
+  }
+
+  async function updateHeroNameInDetailView() {
+    // Assumes that the current view is the hero details view.
+    addToHeroName(nameSuffix);
+
+    let page = getPageElts();
+    let hero = await Hero.fromDetail(page.heroDetail);
+    expect(hero.id).toEqual(targetHero.id);
+    expect(hero.name).toEqual(newHeroName.toUpperCase());
+  }
+
+});
+
+function addToHeroName(text: string): promise.Promise<void> {
+  let input = element(by.css('input'));
+  return input.sendKeys(text);
+}
+
+function expectHeading(hLevel: number, expectedText: string): void {
+    let hTag = `h${hLevel}`;
+    let hText = element(by.css(hTag)).getText();
+    expect(hText).toEqual(expectedText, hTag);
+};
+
+function getHeroAEltById(id: number): ElementFinder {
+  let spanForId = element(by.cssContainingText('li span.badge', id.toString()));
+  return spanForId.element(by.xpath('..'));
+}
+
+function getHeroLiEltById(id: number): ElementFinder {
+  let spanForId = element(by.cssContainingText('li span.badge', id.toString()));
+  return spanForId.element(by.xpath('../..'));
+}
+
+async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
+  let promisedHeroes = await allHeroes.map(Hero.fromLi);
+  // The cast is necessary to get around issuing with the signature of Promise.all()
+  return <Promise<any>> Promise.all(promisedHeroes);
+}
+*******************************************************************************************
+
+Dev ops Integration:
+....................
+
+Source code management(svn,git)------------->jenkins----job----test
+*******************************************************************************************
 
 
 
@@ -1205,32 +2800,3 @@ Hierachy : has-a dependency injection.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Type script
-
-
-Protractor
